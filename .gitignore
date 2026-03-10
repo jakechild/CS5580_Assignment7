@@ -214,3 +214,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+salary_heatmaps.html
+education_v_salary.html
+Multivariate_Visualization_Heatmap.html

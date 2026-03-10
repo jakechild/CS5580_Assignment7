@@ -103,4 +103,6 @@ def generate_salary_heatmaps(df):
         margin=dict(t=80, b=30, l=20, r=20)
     )
 
-    fig.show()
+
+    fig.write_html("salary_heatmaps.html")
+    #fig.show()
