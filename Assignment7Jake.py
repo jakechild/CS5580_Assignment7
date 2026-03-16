@@ -2,8 +2,11 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from scipy import stats
-import SalaryCountryHeatmap as shm
+import Benefits as ben
+import Correlations as cor
 import EducationAnalysis as ea
+import SalaryCountryHeatmap as shm
+import Skills as skills
 
 
 df = pd.read_csv('ai_jobs_market_2025_2026.csv')
@@ -34,77 +37,30 @@ iso_map = {
 
 df['iso_country_code'] = df['country'].map(iso_map)
 
-print(df.info())
-print(df.describe())
-print(df.head())
+df["elite_salary"] = df["annual_salary_usd"] >= 300000
 
-shm.generate_salary_heatmaps(df)
-ea.average_salary_by_education(df)
-ea.compare_jobs_vs_education(df)
+#print(df.info())
+#print(df.describe())
+#print(df.head())
+
+# shm.generate_salary_heatmaps(df)
+# ea.average_salary_by_education(df)
+# ea.compare_jobs_vs_education(df)
+# ben.plotBenefits(df)
+# ben.computeCorrelation(df)
+# cor.correlationCalculations(df)
+skills.skillsProcessing(df)
 
 
-correlationTable = df[[
-    'job_categoryInt',
-    'experience_levelInt',
-    'years_of_experience',
-    'education_requiredInt',
-    'annual_salary_usd',
-    'salary_min_usd',
-    'salary_max_usd',
-    'cityInt',
-    'countryInt',
-    'remote_workInt',
-    'company_sizeInt',
-    'industryInt',
-    'ai_salary_premium_pct',
-    'demand_score',
-    'demand_growth_yoy_pct',
-    'benefits_score_10',
-    'posting_year',
-    'posting_month',
-    'is_senior',
-    'is_remote_friendly',
-    'is_llm_role',
-    'salary_tierInt']].corr(method='pearson')
+# # calculate the percentage of each experience level category that have elite jobs
+# experienceMean = df.groupby("experience_level")["elite_salary"].mean().mul(100).sort_values(ascending=False)
 
-heatFig = px.imshow(
-    correlationTable, 
-    text_auto=True, 
-    aspect="auto",
-    color_continuous_scale='RdBu_r', # Red-Blue scale is great for correlations
-    range_color=[-1, 1],
-    title="Multivariate Visualization Heatmap"
-)
+# # calculate the percetage of each education required category that have elite jobs
+# educationMean = df.groupby("education_required")["elite_salary"].mean().mul(100).sort_values(ascending=False)
 
-heatFig.write_html("Multivariate_Visualization_Heatmap.html")
-#heatFig.show()
+# # Calculate the percentage of each category that have elite jobs
+# job_categoryMean = df.groupby("job_category")["elite_salary"].mean().mul(100).sort_values(ascending=False)
 
-contingency_table = pd.crosstab(df['is_senior'], df['salary_tier'], margins=False)
-chi2Results = stats.chi2_contingency(contingency_table)[0:3]
-print('\nChi-Squared on is_senior with salary_tier as the dependent variable.')
-print(f"p-value: {chi2Results[1]}")
-print(stats.chi2_contingency(contingency_table)[0:3])
-
-contingency_table = pd.crosstab(df['country'], df['salary_tier'], margins=False)
-chi2Results = stats.chi2_contingency(contingency_table)[0:3]
-print('\nChi-Squared on country with salary_tier as the dependent variable.')
-print(f"p-value: {chi2Results[1]}")
-print(stats.chi2_contingency(contingency_table)[0:3])
-
-contingency_table = pd.crosstab(df['experience_level'], df['salary_tier'], margins=False)
-chi2Results = stats.chi2_contingency(contingency_table)[0:3]
-print('\nChi-Squared on experience_level with salary_tier as the dependent variable.')
-print(f"p-value: {chi2Results[1]}")
-print(stats.chi2_contingency(contingency_table)[0:3])
-
-contingency_table = pd.crosstab(df['company_size'], df['salary_tier'], margins=False)
-chi2Results = stats.chi2_contingency(contingency_table)[0:3]
-print('\nChi-Squared on company_size with salary_tier as the dependent variable.')
-print(f"p-value: {chi2Results[1]}")
-print(stats.chi2_contingency(contingency_table)[0:3])
-
-contingency_table = pd.crosstab(df['remote_work'], df['salary_tier'], margins=False)
-chi2Results = stats.chi2_contingency(contingency_table)[0:3]
-print('\nChi-Squared on remote_work with salary_tier as the dependent variable.')
-print(f"p-value: {chi2Results[1]}")
-print(stats.chi2_contingency(contingency_table)[0:3])
+# print(f"\nExperience Level vs elite jobs\n{experienceMean}")
+# print(f"\nEducation Required vs elite jobs\n{educationMean}")
+# print(f"\nJob Category vs elite jobs\n{job_categoryMean}")
